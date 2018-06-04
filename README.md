@@ -11,3 +11,19 @@ I. Pré-requisitos e links para instalação:
 - ChromeDriver 2.39 (https://sites.google.com/a/chromium.org/chromedriver/downloads)
 
 Cheque se o ChromeDriver está no seu PATH: coloque-o em /usr/bin em /usr/local/bin.
+
+
+
+II. Instalação e Execução
+----------
+
+1. Faça o download do arquivo crawler.py
+
+2. Rode crawler.py
+No terminal do Ubuntu, rode o comando "python crawler.py" no diretório em que o arquivo craler.py se encontra. 
+
+3. Tempo de Execução
+O chrome será aberto e fechado diversas vezes enquanto o programa estiver rodando. Espere o programa parar de rodar para ver o resultado.
+
+4. Arquivo de Saída
+Quando o programa finalizar sua execução, terá sido gerado um arquivo csv com os resultados. O arquivo de saída se chamará URLs.csv e estará no mesmo diretório que o arquivo crawler.py.
