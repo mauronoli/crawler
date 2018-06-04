@@ -41,18 +41,15 @@ def get_product_urls(url,classType,productUrls): #stores the product URLs in a l
     soup = BeautifulSoup(innerHTML)   #Now the html can be parsed with BeautifulSoup
     driver.close()   #closes the browser
 
-    #productUrls  = []
-    #r = requests.get(url)
-    #soup = BeautifulSoup(r.text)
-    
-    for productUrl in soup.findAll('a',class_=classType,href=True):
+    for productUrl in soup.findAll('a',class_=classType,href=True):   #finds all links with the class attribute equal to classType
         if (productUrl not in productUrls) and ("epoca" in str(productUrl['href'])):
-            productUrls.append(str(productUrl['href']))
+            productUrls.append(str(productUrl['href']))   #appends to the list if it's not already there (to eliminate duplicat entries)
+                                                          #and if 'epoca' is part of the URL (to eliminate URLs from adds)
     
     if soup.find('li',class_='next pgEmpty'):
-        return False
+        return False   #last page of this category
     else:
-        return True
+        return True   #not last page of this category
     
 def search_info(url,productNames,productTitles):
     if 'http' not in url:
@@ -60,64 +57,39 @@ def search_info(url,productNames,productTitles):
  
     r = requests.get(url)
     soup = BeautifulSoup(r.text)
-    titleTag = soup.find('title')    
-    productNameTag = soup.find('div',class_=re.compile("productName"))
+    titleTag = soup.find('title')   #searches for title tag
+    productNameTag = soup.find('div',class_=re.compile("productName"))   #searches for div tags whose class attribute contains the string "productName"
 
     if (productNameTag):
         productNames.append(productNameTag.string)
         productTitles.append(titleTag.string)
-        return True
-    return False
+        return True   #returns True if product URL was found
+    return False   #returns False if product URL was found
 
 
 ################################ FUNCTIONS ####################################
-for category in CATEGORIES:
-    i = 2
-    categoryUrl = get_category_url(MAIN_URL, "Unhas")
+for category in CATEGORIES:   #navigate through all the different categories of products
+    page = 2
+    categoryUrl = get_category_url(MAIN_URL, category)
 
-    while(get_product_urls(categoryUrl,"shelf-default__link",productUrls)):
-        #print len(productUrls)
-        if (i > 2):
-            categoryUrl = categoryUrl[0:len(categoryUrl)-1-len(str(i-1))] + '#' + str(i)
+    while(get_product_urls(categoryUrl,"shelf-default__link",productUrls)):   #repeats until the last page is reached   
+        if (page > 2):
+            categoryUrl = categoryUrl[0:len(categoryUrl)-1-len(str(page-1))] + '#' + str(page)   #rearranges the URL to navigate through the pages
         else:
-            categoryUrl = categoryUrl + '#' + str(i)
-        i = i + 1
+            categoryUrl = categoryUrl + '#' + str(page)   #transition from first to second page
+        page = page + 1   #increment page number
 
 i = 0
-with open("result.csv",'wb') as resultFile:
+with open("result.csv",'wb') as resultFile:   #opens a csv file to write on
     wr = csv.writer(resultFile)
-    wr.writerow(['URLs:','Product Names:','Product Titles:'])
+    wr.writerow(['URLs:','Product Names:','Product Titles:'])   #writes the first line of the file: the header
     previousLength = 0
     counter = 0
     for productUrl in productUrls:
-        if (search_info(productUrl,productNames,productTitles)):
-            print len(productNames), len(productTitles)
-            wr.writerow([productUrl,productNames[i-counter],productTitles[i-counter]])
-        else:
-            counter = counter + 1
-        previousLength = len(productNames)
-        i = i + 1
-    
-# Close file
-resultFile.close()
-
-
-#numberOfPages = number_of_pages(categoryUrl)
-
-
-#categoryUrl = "https://www.epocacosmeticos.com.br/perfumes#2"
-#driver.get(categoryUrl)
-#innerHTML = driver.execute_script("return document.body.innerHTML")
-#soup = BeautifulSoup(innerHTML)
-#tag = soup.find('li',class_='next')
-#print tag
-#for productUrl in soup.findAll('a',class_="shelf-default__link",href=True):
-#    productUrls.append(str(productUrl['href']))
-#print productUrls
-    
-
-# Close file
-#resultFile.close()
-
-#<li class="next">próximo</li>
-#<li class="next pgEmpty">próximo</li>
+        if (search_info(productUrl,productNames,productTitles)):   #found the URL
+            wr.writerow([productUrl,productNames[i-counter],productTitles[i-counter]])   #writes information on file
+        else:   #URL not found
+            counter = counter + 1   #offset to adjust the index of the list after a URL not found
+        i = i + 1   #index of the list to be written to the file
+   
+resultFile.close()   #closes file
