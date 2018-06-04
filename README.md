@@ -10,7 +10,7 @@ I. Pré-requisitos e links para instalação:
 - Selenium 2 WebDriver API (http://selenium-python.readthedocs.io/installation.html)
 - ChromeDriver 2.39 (https://sites.google.com/a/chromium.org/chromedriver/downloads)
 
-Cheque se o ChromeDriver está no seu 'PATH': coloque-o em '/usr/bin' ou '/usr/local/bin'.
+Cheque se o ChromeDriver está no seu `PATH`: coloque-o em '/usr/bin' ou '/usr/local/bin'.
 
 
 
