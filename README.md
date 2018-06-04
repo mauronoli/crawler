@@ -27,3 +27,10 @@ O chrome será aberto e fechado diversas vezes enquanto o programa estiver rodan
 
 4. Arquivo de Saída
 Quando o programa finalizar sua execução, terá sido gerado um arquivo csv com os resultados. O arquivo de saída se chamará URLs.csv e estará no mesmo diretório que o arquivo crawler.py.
+
+
+
+III. Resultados
+----------
+
+Os resultados aparecem na forma de um arquivo csv de saída. Ele é composto por três colunas (URLs, Nomes dos produtos e títulos dos produtos).
