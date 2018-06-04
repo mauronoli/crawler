@@ -1,4 +1,5 @@
 # encoding=utf8
+################################ LIBRARIES ####################################
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -10,31 +11,35 @@ import csv
 import selenium
 from selenium import webdriver
 
+
+################################ GLOBAL VARIABLES ####################################
 MAIN_URL = "epocacosmeticos.com.br"
-CATEGORIAS = ['Perfumes', 'Cabelos', 'Maquiagem', 'Dermocosméticos', 'Tratamentos', 'Corpo e Banho', 'Unhas']
+CATEGORIES = ['Perfumes', 'Cabelos', 'Maquiagem', 'Dermocosméticos', 'Tratamentos', 'Corpo e Banho', 'Unhas']
 productNames = []
 productTitles = []
 productUrls = []
 
-def get_category_url(url,category):
+
+################################ FUNCTIONS ####################################
+def get_category_url(url,category):  #Returns the URL of the respective category page
     if 'http' not in url:
-        url = 'http://'+url
+        url = 'http://'+url   #adds http to the URL if it's not there
     
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text)
-    categoryUrl = soup.find('a',text=category,href=True)
+    r = requests.get(url)   #get request for the main URL
+    soup = BeautifulSoup(r.text)   #stores the html related to the URL
+    categoryUrl = soup.find('a',text=category,href=True)   #searches for links with the respective category name
     
     return str(categoryUrl['href'])
     
-def get_product_urls(url,classType,productUrls):
+def get_product_urls(url,classType,productUrls): #stores the product URLs in a list
     if 'http' not in url:
         url = 'http://'+url
 
     driver = webdriver.Chrome()
-    driver.get(url)
-    innerHTML = driver.execute_script("return document.body.innerHTML")
-    soup = BeautifulSoup(innerHTML)
-    driver.close()
+    driver.get(url)   #opens a Chrome browser with a certain URL
+    innerHTML = driver.execute_script("return document.body.innerHTML")   #execute JavaScript and stores the resulting html in the variable innerHTML
+    soup = BeautifulSoup(innerHTML)   #Now the html can be parsed with BeautifulSoup
+    driver.close()   #closes the browser
 
     #productUrls  = []
     #r = requests.get(url)
@@ -48,8 +53,6 @@ def get_product_urls(url,classType,productUrls):
         return False
     else:
         return True
-
-    #return productUrls
     
 def search_info(url,productNames,productTitles):
     if 'http' not in url:
@@ -66,38 +69,19 @@ def search_info(url,productNames,productTitles):
         return True
     return False
 
-def has_one_att_type(tag):
-    if (len(tag.attrs)==1):
-    	return tag.has_attr('type')
-    return False
 
-def number_of_pages(url):
-    if 'http' not in url:
-        url = 'http://'+url
- 
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text)
-    productTag = soup.find(has_one_att_type)
-    
-    indexStart = productTag.string.find("=")
-    indexEnd = productTag.string.find(";",indexStart)
-    numberOfPages = productTag.string[indexStart+2:indexEnd]
-    
-    return int(numberOfPages)
+################################ FUNCTIONS ####################################
+for category in CATEGORIES:
+    i = 2
+    categoryUrl = get_category_url(MAIN_URL, "Unhas")
 
-############### MAIN PROGRAM ####################################
-
-#for category in CATEGORIAS:
-i = 2
-categoryUrl = get_category_url(MAIN_URL, "Unhas")
-
-while(get_product_urls(categoryUrl,"shelf-default__link",productUrls)):
-    #print len(productUrls)
-    if (i > 2):
-        categoryUrl = categoryUrl[0:len(categoryUrl)-1-len(str(i-1))] + '#' + str(i)
-    else:
-        categoryUrl = categoryUrl + '#' + str(i)
-    i = i + 1
+    while(get_product_urls(categoryUrl,"shelf-default__link",productUrls)):
+        #print len(productUrls)
+        if (i > 2):
+            categoryUrl = categoryUrl[0:len(categoryUrl)-1-len(str(i-1))] + '#' + str(i)
+        else:
+            categoryUrl = categoryUrl + '#' + str(i)
+        i = i + 1
 
 i = 0
 with open("result.csv",'wb') as resultFile:
